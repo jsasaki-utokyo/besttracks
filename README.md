@@ -32,14 +32,20 @@ Up to now, the datasets from the above agencies are supported.  It would be good
 
 ---
 
-## 2. How to install
+## 2. How to install on Windows 10
 **Requirements**
 `besttracks` is developed under the environment with `numpy` (=version 1.15.4), `pandas` (=version 1.0.3), `xarray` (=version 0.15.1), `matplotlib` (=version 3.3.1), and `cartopy` (=version 0.18.0).  Older versions of these packages are not well tested.
 
+The following is based on [pyfvcom](https://github.com/jsasaki-utokyo/pyfvcom) environment; otherwise create a conda virtual environment, activate it, and install the prerequisite packages.
 
-**Install from github**
 ```
-git clone https://github.com/miniufo/besttracks.git
+# Move into an appropriate folder where besttracks package is to be installed.
+# The following is based on pyfvcom environment; otherwise activate a virtual environment and install prerequisite packages before git clone.
+conda activate pyfvcom
+conda install xarray
+git clone https://github.com/jsasaki-utokyo/besttracks.git
+cd besttracks
+pip install -e .
 ```
 
 ---
