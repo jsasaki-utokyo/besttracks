@@ -38,7 +38,7 @@ data (BABJ format).
 IO realted methods are defined below.
 """
 def parse_TCs(filename, rec_cond=None, tc_cond=None,
-              agency='CMA', wndunit='knot'):
+              agency='JMA', wndunit='knot'):
     """
     Parse TC Best-Track data from various agents.
 
