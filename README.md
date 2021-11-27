@@ -43,6 +43,7 @@ The following is based on [pyfvcom](https://github.com/jsasaki-utokyo/pyfvcom) e
 # The following is based on pyfvcom environment; otherwise activate a virtual environment and install prerequisite packages before git clone.
 conda activate pyfvcom
 conda install xarray
+conda install scikit-learn
 git clone https://github.com/jsasaki-utokyo/besttracks.git
 cd besttracks
 pip install -e .
@@ -51,19 +52,39 @@ pip install -e .
 ---
 
 ## 3. Examples
-### 3.1 Best-track datasets manipulations
-Parsing best-track dataset **CMA** into `TCSet` would be as simple as:
+### 3.0 Preparation
+```python
+from besttracks import parse_TCs
+from besttracks import parseJMA
+
+# Suppress deprecated warnings for cartopy 0.18.0
+import warnings
+warnings.simplefilter('ignore')
+
+# Specify JMA best track data path
+fpath = "D:/Github/besttracks/data/jma_rsmc/bst_all.txt"
+```
+### 3.1 Parsing JMA best-tracks into df (pandas.DataFrame)
+`df.columns=['ID', 'NAME', 'TIME', 'LAT', 'LON', 'TYPE', 'PRS', 'WND']` where `ID`: 6 digits of year in 4-digit and typhoon number in 2-digit. `TIME`: in UTC, `WND` in knot (1 knot = 0.51444 m/s)
+
+```python
+df = parseJMA(fpath)
+ID = '201919'
+df[df.ID == ID].head()
+```
+### 3.2 Best-track datasets manipulations
+Parsing best-track dataset **JMA** into `TCSet` would be as simple as:
 ```python
 from besttracks import parse_TCs
 
-# parse dataset from CMA
-TCs_CMA = parse_TCs('./CH*.txt', agency='CMA')
+# parse dataset from JMA
+TCs_JMA = parse_TCs(fpath, agency='JMA')
 
 # Brief describe the dataset
-print(TCs_CMA)
+print(TCs_JMA)
 
 # Plotting all TC tracks
-TCs_CMA.plot_tracks()
+TCs_JMA.plot_tracks(add_legend=True)
 ```
 
 ![tracks plot](https://raw.githubusercontent.com/miniufo/besttracks/master/pics/tracks_cma.png)
@@ -71,18 +92,18 @@ TCs_CMA.plot_tracks()
 One can also bin the tracks into gridded statistics (also known as PDF distribution) as:
 ```python
 # binning the tracks into gridded data
-TCs_CMA.binning()
+TCs_JMA.binning()
 ```
 
 ![binning plot](https://raw.githubusercontent.com/miniufo/besttracks/master/pics/binning_cma.png)
 
 ---
 
-### 3.2 A single TC manipulation
+### 3.3 A single TC manipulation
 Manipulating a single `TC` is also simple:
 ```python
 # Selecting a single TC
-tc = TCs_cma[-1]
+tc = TCs_JMA[-1]
 
 # Briefly descibe the TC
 print(tc)
@@ -94,13 +115,12 @@ tc.plot()
 
 ---
 
-### 3.3 Timeseries statistics
+### 3.4 Timeseries statistics
 `TCSet` also supports statistical analysis over time space. One can plot the timeseries of TC number and accumulated cyclonic energy (ACE) of a `TCSet` as:
 ```python
 # plot the climatological timeseries of No. and ACE
-TCs_CMA.plot_timeseries(freq='annual')
+TCs_JMA.plot_timeseries(freq='annual')
 ```
 ![tc plot](https://raw.githubusercontent.com/miniufo/besttracks/master/pics/timeseries.png)
-
 
 More examples can be found at this [notebook](https://github.com/miniufo/besttracks/blob/master/notebooks/QuickGuide.ipynb)
