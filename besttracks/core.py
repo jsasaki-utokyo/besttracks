@@ -7,6 +7,8 @@ Copyright 2018. All rights reserved. Use is subject to license terms.
 """
 import numpy as np
 import pandas as pd
+# jsasaki 2023-04-24
+from datetime import timedelta
 
 undef = -9999.0
 
@@ -137,10 +139,12 @@ class Particle(object):
             Duration of this particle in unit of day
         """
         duration = np.ptp(self.records['TIME'])
+        # jsasaki 2023-04-24
+        #print(type(duration))
         # return pd.to_timedelta([duration]).astype('timedelta64[h]')[0] / 24.0
-        return pd.to_timedelta([duration]).astype('timedelta64[s]')[0] / (24.0 * 3600.0)
-    
-    
+        #return pd.to_timedelta([duration]).astype('timedelta64[s]')[0] / (24.0 * 3600.0)
+        return pd.to_timedelta([duration]) / timedelta(days=1)
+
     def resample(self, *args, **kwargs):
         """
         Re-sample a particle along time dimension.
@@ -516,6 +520,8 @@ class ParticleSet(object):
         """
         Get total duration of this ParticleSet in unit of days.
         """
+        # jsasaki 2023-04-24
+        #print(self.particles[0:2])
         return sum([p.duration() for p in self.particles])
     
     def plot_tracks(self, **kwargs):
@@ -676,16 +682,20 @@ class TCSet(ParticleSet):
         
         yrs = [p.year for p in self.particles]
         
+        # jsasaki 2023-04-24
+        print(len(self.particles))
+        print(min(yrs), max(yrs), self.total_duration()[0])
         info.append('  {0:1d} TCs from {1:4d} to {2:4d}, {3:6.1f} cyclone days\n'
                     .format(len(self.particles), min(yrs),
-                            max(yrs), self.total_duration()))
+                            max(yrs), self.total_duration()[0]))
         
         minTC, maxTC = self._find_duration_extrema()
         
+        # jsasaki 2023-04-24
         info.append('  longest   TC {0:s}, {1:9s}: {2:5.2f} days \n'.format(
-                    maxTC.ID, maxTC.name, maxTC.duration()))
+                    maxTC.ID, maxTC.name, maxTC.duration()[0]))
         info.append('  shortest  TC {0:s}, {1:9s}: {2:5.2f} days \n'.format(
-                    minTC.ID, minTC.name, minTC.duration()))
+                    minTC.ID, minTC.name, minTC.duration()[0]))
         
         minTC, maxTC = self.__find_intensity_extrema()
         
